@@ -1,0 +1,406 @@
+---
+title: "Session 2a"
+author: The Data Carpentry (amended and delivered by Chris Oldnall)
+date: October 25th 2023
+output: beamer_presentation
+---
+
+## Usage and Adaptation of Data Carpentry Materials
+Most material found in this document has been adapted from the Data Carpentry [https://datacarpentry.org/r-socialsci/] materials, under the creative commons attribution license [https://creativecommons.org/licenses/by/4.0/]. Minor amendments have been made to allow for compatability in order.
+
+---
+
+## Objectives of the session:
+
+- Describe the purpose of an R package and the **`dplyr`** package.
+- Select certain columns in a dataframe with the **`dplyr`** function `select`.
+- Select certain rows in a dataframe according to filtering conditions with the **`dplyr`** function `filter`.
+- Link the output of one **`dplyr`** function to the input of another function with the 'pipe' operator `%>%`.
+- Add new columns to a dataframe that are functions of existing columns with `mutate`.
+- Use the split-apply-combine concept for data analysis.
+- Use `summarize`, `group_by`, and `count` to split a dataframe into groups of observations, apply a summary statistics for each group, and then combine the results.
+
+---
+
+- Describe the concept of a wide and a long table format and for which purpose those formats are useful.
+- Describe the roles of variable names and their associated values when a table is reshaped.
+- Reshape a dataframe from long to wide format and back with the `pivot_wider` and `pivot_longer` commands from the **`tidyr`** package.
+- Export a dataframe to a csv file.
+
+
+## Questions to be able to answer:
+
+- How can I select specific rows and/or columns from a dataframe?
+- How can I combine multiple commands into a single command?
+- How can I create new columns or remove existing columns from a dataframe?
+- How can I reformat a dataframe to meet my needs?
+
+---
+
+## What is dplyr
+
+**`dplyr`** is a package for making tabular data wrangling easier by using a
+limited set of functions that can be combined to extract and summarize insights
+from your data.
+
+Like **`readr`**, **`dplyr`** is a part of the tidyverse. These packages were loaded
+in R's memory when we called `library(tidyverse)` earlier.
+
+---
+
+## Note
+
+The packages in the tidyverse, namely **`dplyr`**, **`tidyr`** and **`ggplot2`**
+accept both the British (e.g. *summarise*) and American (e.g. *summarize*) spelling
+variants of different function and option names. For this lesson, we utilize
+the American spellings of different functions; however, feel free to use
+the regional variant for where you are teaching.
+
+---
+
+## Learning **`dplyr`**
+
+To make sure everyone will use the same dataset for this lesson, we'll read
+again the SAFI dataset that we downloaded earlier.
+
+```{r, results="hide", purl=FALSE, message=FALSE}
+library(tidyverse)
+interviews <- read_csv("https://raw.githubusercontent.com/datacarpentry/r-socialsci/main/episodes/data/SAFI_clean.csv")
+```
+
+---
+
+## Functions in dplyr 
+
+We're going to learn some of the most common **`dplyr`** functions:
+
+- `select()`: subset columns
+- `filter()`: subset rows on conditions
+- `mutate()`: create new columns by using information from other columns
+- `group_by()` and `summarize()`: create summary statistics on grouped data
+- `arrange()`: sort results
+- `count()`: count discrete values
+
+---
+
+## Selecting columns and filtering rows
+
+To select columns of a dataframe, use `select()`. The first argument to this
+function is the dataframe (`interviews`), and the subsequent arguments are the
+columns to keep, separated by commas. Alternatively, if you are selecting
+columns adjacent to each other, you can use a `:` to select a range of columns,
+read as "select columns from \_\_\_ to \_\_\_." You may have done something similar in
+the past using subsetting. `select()` is essentially doing the same thing as
+subsetting, using a package (`dplyr`) instead of R's base functions.
+
+---
+
+## Selecting example 
+
+```{r, results="hide", purl=FALSE}
+# to select columns throughout the dataframe
+select(interviews, village, no_membrs, months_lack_food)
+# to select a series of connected columns
+select(interviews, village:respondent_wall_type)
+```
+
+---
+
+## Filter example 
+
+To choose rows based on specific criteria, we can use the `filter()` function.
+The argument after the dataframe is the condition we want our final
+dataframe to adhere to (e.g. village name is Chirodzo):
+
+```{r, purl=FALSE}
+# filters observations where village name is "Chirodzo"
+filter(interviews, village == "Chirodzo")
+```
+
+---
+
+## Filter example cont.
+
+We can also specify multiple conditions within the `filter()` function. We can
+combine conditions using either "and" or "or" statements. In an "and"
+statement, an observation (row) must meet **every** criteria to be included
+in the resulting dataframe. To form "and" statements within dplyr, we can  pass
+our desired conditions as arguments in the `filter()` function, separated by
+commas:
+
+```{r, purl=FALSE}
+
+# filters observations with "and" operator (comma)
+# output dataframe satisfies ALL specified conditions
+filter(interviews, village == "Chirodzo",
+                   rooms > 1,
+                   no_meals > 2)
+```
+
+---
+
+## Filter example cont.
+
+We can also form "and" statements with the `&` operator instead of commas:
+
+```{r, purl=FALSE}
+# filters observations with "&" logical operator
+# output dataframe satisfies ALL specified conditions
+filter(interviews, village == "Chirodzo" &
+                   rooms > 1 &
+                   no_meals > 2)
+```
+
+---
+
+## Filter example cont. 
+
+In an "or" statement, observations must meet *at least one* of the specified conditions.
+To form "or" statements we use the logical operator for "or," which is the vertical bar (|):
+
+```{r, purl=FALSE}
+# filters observations with "|" logical operator
+# output dataframe satisfies AT LEAST ONE of the specified conditions
+filter(interviews, village == "Chirodzo" | village == "Ruaca")
+```
+
+---
+
+## Multiple steps
+
+What if you want to select and filter at the same time? There are three
+ways to do this: use intermediate steps, nested functions, or pipes.
+
+With intermediate steps, you create a temporary dataframe and use
+that as input to the next function, like this:
+
+```{r, purl=FALSE}
+interviews2 <- filter(interviews, village == "Chirodzo")
+interviews_ch <- select(interviews2, village:respondent_wall_type)
+```
+
+This is readable, but can clutter up your workspace with lots of objects that
+you have to name individually. With multiple steps, that can be hard to keep
+track of.
+
+---
+
+## Nesting
+
+You can also nest functions (i.e. one function inside of another), like this:
+
+```{r, purl=FALSE}
+interviews_ch <- select(filter(interviews, village == "Chirodzo"),
+                         village:respondent_wall_type)
+```
+
+---
+
+## Pipes 
+
+The last option, *pipes* '%>%', are a recent addition to R. Pipes let you take the
+output of one function and send it directly to the next, which is useful when
+you need to do many things to the same dataset. You can access this pipe function with:
+
+- <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>M</kbd> if you have a PC or <kbd>Cmd</kbd> +
+  <kbd>Shift</kbd> + <kbd>M</kbd> if you have a Mac.
+
+```{r, purl=FALSE}
+interviews %>%
+    filter(village == "Chirodzo") %>%
+    select(village:respondent_wall_type)
+```
+
+---
+
+## Assigning Alongside Piping
+
+If we want to create a new object with this smaller version of the data, we
+can assign it a new name:
+
+```{r, purl=FALSE}
+interviews_ch <- interviews %>%
+    filter(village == "Chirodzo") %>%
+    select(village:respondent_wall_type)
+```
+
+---
+
+## Mutate
+
+Frequently you'll want to create new columns based on the values in existing
+columns, for example to do unit conversions, or to find the ratio of values in
+two columns. For this we'll use `mutate()`.
+
+We might be interested in the ratio of number of household members
+to rooms used for sleeping (i.e. avg number of people per room):
+
+```{r, purl=FALSE}
+interviews %>%
+    mutate(people_per_room = no_membrs / rooms)
+```
+
+---
+
+# Filter and Mutate 
+
+We may be interested in investigating whether being a member of an
+irrigation association had any effect on the ratio of household members
+to rooms. To look at this relationship, we will first remove
+data from our dataset where the respondent didn't answer the
+question of whether they were a member of an irrigation association.
+These cases are recorded as "NULL" in the dataset.
+
+---
+
+To remove these cases, we could insert a `filter()` in the chain:
+
+```{r, purl=FALSE}
+interviews %>%
+    filter(!is.na(memb_assoc)) %>%
+    mutate(people_per_room = no_membrs / rooms)
+```
+
+The `!` symbol negates the result of the `is.na()` function. Thus, if `is.na()`
+returns a value of `TRUE` (because the `memb_assoc` is missing), the `!` symbol
+negates this and says we only want values of `FALSE`, where `memb_assoc` **is
+not** missing.
+
+---
+
+## Split-apply-combine data analysis and the summarize() function
+
+Many data analysis tasks can be approached using the *split-apply-combine*
+paradigm: split the data into groups, apply some analysis to each group, and
+then combine the results. **`dplyr`** makes this very easy through the use of
+the `group_by()` function.
+
+---
+
+### The `summarize()` function
+
+`group_by()` is often used together with `summarize()`, which collapses each
+group into a single-row summary of that group.  `group_by()` takes as arguments
+the column names that contain the **categorical** variables for which you want
+to calculate the summary statistics. So to compute the average household size by
+village:
+
+```{r, purl=FALSE}
+interviews %>%
+    group_by(village) %>%
+    summarize(mean_no_membrs = mean(no_membrs))
+```
+
+---
+
+### Counting
+
+When working with data, we often want to know the number of observations found
+for each factor or combination of factors. For this task, **`dplyr`** provides
+`count()`. For example, if we wanted to count the number of rows of data for
+each village, we would do:
+
+```{r, purl=FALSE}
+interviews %>%
+    count(village)
+```
+
+---
+
+## Reshaping with pivot\_wider() and pivot\_longer()
+
+There are essentially three rules that define a "tidy" dataset:
+
+1. Each variable has its own column
+2. Each observation has its own row
+3. Each value must have its own cell
+
+---
+
+### Long and wide data formats
+
+In the `interviews` data, each row contains the values of variables associated
+with each record collected (each interview in the villages), where it is stated
+that the `key_ID` was "added to provide a unique Id for each observation"
+and the `instance_ID` "does this as well but it is not as convenient to use."
+
+However, with some inspection, we notice that there are more than one row in the
+dataset with the same `key_ID` (as seen below). However, the `instanceID`s
+associated with these duplicate `key_ID`s are not the same. Thus, we should
+think of `instanceID` as the unique identifier for observations!
+
+---
+
+```{r, purl=FALSE}
+interviews %>%
+  select(key_ID, village, interview_date, instanceID)
+```
+
+---
+
+As seen in the code below, for each interview date in each village no
+`instanceID`s are the same. Thus, this format is what is called a "long" data
+format, where each observation occupies only one row in the dataframe.
+
+```{r, purl=FALSE}
+interviews %>%
+  filter(village == "Chirodzo") %>%
+  select(key_ID, village, interview_date, instanceID) %>%
+  sample_n(size = 10)
+```
+
+---
+
+We notice that the layout or format of the `interviews` data is in a format that
+adheres to rules 1-3, where
+
+- each column is a variable
+- each row is an observation
+- each value has its own cell
+
+This is called a "long" data format. But, we notice that each column represents
+a different variable. In the "longest" data format there would only be three
+columns, one for the id variable, one for the observed variable, and one for the
+observed value (of that variable). This data format is quite unsightly
+and difficult to work with, so you will rarely see it in use.
+
+---
+
+### Questions which warrant different data formats
+
+In interviews, each row contains the values of variables associated with each
+record (the unit), values such as the village of the respondent, the number
+of household members, or the type of wall their house had. This format allows
+for us to make comparisons across individual surveys, but what if we wanted to
+look at differences in households grouped by different types of housing
+construction materials?
+
+To facilitate this comparison we would need to create a new table where each row
+(the unit) was comprised of values of variables associated with housing material
+(e.g. the `respondent_wall_type`). In practical terms this means the values of
+the wall construction materials in `respondent_wall_type` (e.g. muddaub,
+burntbricks, cement, sunbricks) would become the names of column variables and
+the cells would contain values of `TRUE` or `FALSE`, for whether that house had
+a wall made of that material.
+
+--- 
+
+## Exporting data
+
+Now that you have learned how to use **`dplyr`** and **`tidyr`** to wrangle your
+raw data, you may want to export these new data sets to share them with your
+collaborators or for archival purposes.
+
+Similar to the `read_csv()` function used for reading CSV files into R, there is
+a `write_csv()` function that generates CSV files from dataframes.
+
+---
+
+Before using `write_csv()`, we are going to create a new folder, `data_output`,
+in our working directory that will store this generated dataset. We don't want
+to write generated datasets in the same directory as our raw data. It's good
+practice to keep them separate. The `data` folder should only contain the raw,
+unaltered data, and should be left alone to make sure we don't delete or modify
+it. In contrast, our script will generate the contents of the `data_output`
+directory, so even if the files it contains are deleted, we can always
+re-generate them.

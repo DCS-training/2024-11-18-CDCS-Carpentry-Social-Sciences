@@ -1,0 +1,80 @@
+---
+title: Session2b - Data visulisation with ggplot
+source: Rmd
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Usage and Adaptation of Data Carpentry Materials:
+Most material found in this document has been adapted from [Data Carpentry][https://datacarpentry.org/r-socialsci/] materials, under the [creative commons attribution license][https://creativecommons.org/licenses/by/4.0/]. Minor amendments have been made to allow for compatability in order.
+
+### Exercise 0
+
+Go ahead and load in tidyverse as usual.
+
+```{r Tidyverse and Here Loading}
+
+```
+
+-------------
+
+For this workshop, we will continue to look at the interview data. Run the below to get a neater version of the data for plotting. If you have time at the end come back to it to see if you can break down what it is doing.
+
+```{r DataImport}
+interviews <- read_csv("https://raw.githubusercontent.com/datacarpentry/r-socialsci/main/episodes/data/SAFI_clean.csv")
+
+interviews_plotting <- interviews %>%
+  ## pivot wider by items_owned
+  separate_longer_delim(items_owned, delim = ";") %>%
+  ## if there were no items listed, changing NA to no_listed_items
+  replace_na(list(items_owned = "no_listed_items")) %>%
+  mutate(items_owned_logical = TRUE) %>%
+  pivot_wider(names_from = items_owned,
+              values_from = items_owned_logical,
+              values_fill = list(items_owned_logical = FALSE)) %>%
+  ## pivot wider by months_lack_food
+  separate_longer_delim(months_lack_food, delim = ";") %>%
+  mutate(months_lack_food_logical = TRUE) %>%
+  pivot_wider(names_from = months_lack_food,
+              values_from = months_lack_food_logical,
+              values_fill = list(months_lack_food_logical = FALSE)) %>%
+  ## add some summary columns
+  mutate(number_months_lack_food = rowSums(select(., Jan:May))) %>%
+  mutate(number_items = rowSums(select(., bicycle:car)))
+```
+
+### Exercise 1
+
+Create a scatter plot of `rooms` by `village` with the `respondent_wall_type` showing in different colours. Does this seem like a good way to display the relationship between these variables? What other kinds of plots might you use to show this type of data?
+
+```{r Scatterplot Task}
+# <INSERT YOUR ANSWER ON LINES BELOW>
+
+```
+
+-------------
+
+### Exercise 2
+
+Create a boxplot for `liv_count` for each wall type. Overlay the boxplot layer on a jitter layer to show actual measurements.
+
+```{r Boxplot Task}
+# <INSERT YOUR ANSWER ON LINES BELOW>
+
+```
+
+-------------
+
+### Exercise 3
+
+Create a bar plot showing the proportion of respondents in each village who are or are not part of an irrigation association(`memb_assoc`). Include only respondents who answered that question in the calculations and plot. Which village had the lowest proportion of respondents in an irrigation association?
+
+**Hint:** you will have to do some data wrangling to get the data you need for the bar chart.
+
+```{r Barchart Task}
+# <INSERT YOUR ANSWER ON LINES BELOW>
+
+```
+

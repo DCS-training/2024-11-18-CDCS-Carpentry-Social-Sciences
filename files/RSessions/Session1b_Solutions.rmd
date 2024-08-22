@@ -1,0 +1,59 @@
+---
+title: Session1b - Working with data in R
+source: Rmd
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Usage and Adaptation of Data Carpentry Materials:
+Most material found in this document has been adapted from [Data Carpentry][https://datacarpentry.org/r-socialsci/] materials, under the [creative commons attribution license][https://creativecommons.org/licenses/by/4.0/]. Minor amendments have been made to allow for compatability in order.
+
+### Exercise 0
+
+Having installed tidyverse and here packages earlier, we must still load in the packages for our system to use it. Go ahead and do this.
+
+```{r Tidyverse and Here Loading}
+library(tidyverse)
+library(here)
+```
+
+-------------
+
+For this workshop, we will need to import a tidy data set. We will choose one from the data carpentry.
+
+```{r DataImport}
+interviews <- read_csv("https://raw.githubusercontent.com/datacarpentry/r-socialsci/main/episodes/data/SAFI_clean.csv")
+```
+
+### Exercise 1
+Now you have the data imported, try some of the data summary functions that we discussed on this data. Once you've done that write a short paragraph detailing how many entries there are, how many vairables and what their types are.
+
+```{r Here Install and Loading}
+str(interviews)
+head(interviews)
+glimpse(interviews)
+```
+
+-------------
+
+### Exercise 2
+Some of the variables in the dataframe are encoded as strings, when in fact they are categories. Go ahead and change one of the variables that is like this into a factor.
+
+```{r Factor Change}
+memb_assoc <- interviews$memb_assoc
+memb_assoc <- as.factor(memb_assoc)
+```
+
+-------------
+
+### Exercise 3
+In the tutorial we saw we could dissect the variable 'interview_date' into each of the year, month and date components. Go ahead and replicate this saving each variable under a different name. 
+
+```{r Interview Date Dissection}
+interviews$day <- day(dates)
+interviews$month <- month(dates)
+interviews$year <- year(dates)
+interviews
+```

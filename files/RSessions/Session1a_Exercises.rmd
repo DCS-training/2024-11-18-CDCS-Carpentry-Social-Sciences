@@ -1,0 +1,69 @@
+---
+title: Session1a - An introduction to R
+source: Rmd
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Usage and Adaptation of Data Carpentry Materials:
+Most material found in this document has been adapted from [Data Carpentry][https://datacarpentry.org/r-socialsci/] materials, under the [creative commons attribution license][https://creativecommons.org/licenses/by/4.0/]. Minor amendments have been made to allow for compatability in order.
+
+To get started with, we will need to install some packages. Throughout we will use a package called 'tidyverse'. This is a 'superpackage' which contains lots of other packages with lots of functions. If you haven't installed this already then you need to go ahead and run the line below. You only need to install a package once.
+
+```{r Tidyverse Install}
+install.packages("tidyverse")
+```
+
+You will notice in your console that the section above appeared in a 'grey' area. This is because this is an R Markdown document. This is represented by the file extension .Rmd. Meanwhile there are also R Scripts (represented by .R extensions). Typically when writing code for publishable purposes or for software we have a series of R Scripts, however R markdown files are becomming more flavoursome when examining unqiue datasets since a neater overview can be given, it also allows for a neat PDF (or other document type) to be an output showing text, code and code output.
+
+Having installed tidyverse earlier, we must still load in the package for our system to use it. We do that with the 'library' command - this is a built in R function. Let's do that now below, noting we do not need to use the quotes to load it in:
+
+```{r Tidyverse Loading}
+library(tidyverse)
+```
+
+-------------
+
+### Exercise 1
+Now that you know the basics of how to install and load packages, have a go at writing a code block below to install and load the package called "here". This will be the data set we will work with for the rest of this tutorial.
+
+```{r Here Install and Loading}
+# <INSERT YOUR ANSWER ON LINES BELOW>
+
+```
+
+-------------
+
+### Exercise 2
+
+Create two variables `r_length` and `r_width` and assign them values. It should be noted that, because `length` is a built-in R function, R Studio might add "()" after you type `length` and if you leave the parentheses you will get unexpected results. This is why you might see other programmers abbreviate common words. Create a third variable `r_area` and give it a value based on the current values of `r_length` and `r_width`. Show that changing the values of either `r_length` and `r_width` does not affect the value of `r_area`. [hint: area = length x width].
+
+```{r Length/Width/Area}
+# <INSERT YOUR ANSWER ON LINES BELOW>
+
+```
+
+-------------
+
+### Exercise 3
+
+Type in `?round` at the console and then look at the output in the Help pane. What other functions exist that are similar to `round`? How do you use the `digits` parameter in the round function?
+
+```{r RoundFunctions}
+# <INSERT YOUR ANSWER ON LINES BELOW>
+
+```
+
+-------------
+
+### Exercise 4
+
+Using this vector of rooms, create a new vector with the NAs removed. Then use the function `median()` to calculate the median of the `rooms` vector. Use R to figure out how many households in the set use more than 2 rooms for sleeping.
+
+```{r RoomNumberExercise}
+rooms <- c(1, 2, 1, 1, NA, 3, 1, 3, 2, 1, 1, 8, 3, 1, NA, 1)
+# <INSERT YOUR ANSWER ON LINES BELOW>
+
+```

@@ -1,0 +1,81 @@
+---
+title: Session2a - Data wrangingling with tidyverse
+source: Rmd
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Usage and Adaptation of Data Carpentry Materials:
+Most material found in this document has been adapted from [Data Carpentry][https://datacarpentry.org/r-socialsci/] materials, under the [creative commons attribution license][https://creativecommons.org/licenses/by/4.0/]. Minor amendments have been made to allow for compatability in order.
+
+### Exercise 0
+
+Go ahead and load in tidyverse as usual.
+
+```{r Tidyverse and Here Loading}
+
+```
+
+-------------
+
+For this workshop, we will need to import a tidy data set. We will continue to use the data set from this morning.
+
+```{r DataImport}
+interviews <- read_csv("https://raw.githubusercontent.com/datacarpentry/r-socialsci/main/episodes/data/SAFI_clean.csv")
+```
+
+### Exercise 1
+
+Using pipes, subset the `interviews` data to include interviews where respondents were members of an irrigation association (`memb_assoc`) and retain only the columns `affect_conflicts`, `liv_count`, and `no_meals`. Save this in an object called 'interviews_restricted'
+```{r Subsetting Task}
+# <INSERT YOUR ANSWER ON LINES BELOW>
+
+```
+
+-------------
+
+### Exercise 2
+
+Create a new dataframe from the `interviews` data that meets the following criteria: contains only the `village` column and a new column called `total_meals` containing a value that is equal to the total number of meals served in the household per day on average (`no_membrs` times `no_meals`). Only the rows where `total_meals` is greater than 20 should be shown in the final dataframe. This should be saved as 'interview_total_meals'
+
+**Hint**: think about how the commands should be ordered to produce this data frame.
+
+```{r New Variable Task}
+# <INSERT YOUR ANSWER ON LINES BELOW>
+
+```
+
+-------------
+
+### Exercise 3
+
+How many households in the survey have an average of two meals per day? Three meals per day? Are there any other numbers of meals represented? 
+
+```{r Counting Task}
+# <INSERT YOUR ANSWER ON LINES BELOW>
+
+```
+
+-------------
+
+### Exercise 4
+
+Use `group_by()` and `summarise()` to find the mean, min, and max number of household members for each village. Also add the number of observations (hint: see `?n`).
+
+```{r Summary Task}
+# <INSERT YOUR ANSWER ON LINES BELOW>
+
+```
+
+-------------
+
+### Exercise 5
+
+Create a new dataframe (named `interviews_months_lack_food`) that has one column for each month and records `TRUE` or `FALSE` for whether each interview respondent was lacking food in that month.
+
+```{r Pivoting Task}
+# <INSERT YOUR ANSWER ON LINES BELOW>
+
+```
