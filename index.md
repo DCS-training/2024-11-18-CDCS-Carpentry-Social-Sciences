@@ -423,5 +423,5 @@ please preview your site before committing, and make sure to run
   <a href = "{{site.swc_github}}/workshop-template/wiki/Configuration-Problems-and-Solutions">Configuration Problems and Solutions wiki page</a>.
 </p>
 <p>
- The setup instructions for the Data Carpentry Social Science workshops (with R) can be found <a href = "https://dcs-training.github.io/2023-10-22-Carpentry-Social-Science/SetUp"> here.</a>
+ The setup instructions for the Data Carpentry Social Science workshops (with R) can be found <a href = "https://dcs-training.github.io/2024-11-18-CDCS-Carpentry-Social-Sciences/SetUp"> here.</a>
  </p>
